@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive educational CPU scheduling simulator for Non-Preemptive Shortest Job First and Preemptive Shortest Remaining Time First.">
+  <meta name="theme-color" content="#111827">
+  <title>SCHEDULAB — SJF & SRTF Simulator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="top-progress" id="topProgress"></div>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="Schedulab home">
+      <span class="brand-mark"><span></span><span></span><span></span></span>
+      <span>SCHEDU<span class="brand-accent">LAB</span></span>
+    </a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#simulator">Simulator</a>
+      <a href="#concepts">Concepts</a>
+      <a href="#research">Research</a>
+      <a href="#methodology">Methodology</a>
+      <a href="#references">References</a>
+    </nav>
+    <a class="nav-cta" href="#simulator">Launch lab <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main>
+    <section class="hero section-wrap" id="home">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="status-dot"></span> OPERATING SYSTEMS · SELF-LEARNING ACTIVITY</div>
+        <h1>Make CPU scheduling<br><span class="gradient-text">visible.</span></h1>
+        <p class="hero-lede">Explore how the shortest-job-first family chooses processes. Run the same workload through Non-Preemptive SJF and Preemptive SJF (SRTF), then compare the timelines and performance metrics.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#simulator">Run a simulation <span aria-hidden="true">→</span></a>
+          <a class="button button-quiet" href="#concepts">Learn the concepts</a>
+        </div>
+        <div class="hero-meta"><span><i class="mini-check">✓</i> Runs in your browser</span><span><i class="mini-check">✓</i> No backend required</span><span><i class="mini-check">✓</i> Editable workload</span></div>
+      </div>
+      <div class="hero-visual" aria-label="Illustration of processes entering a CPU scheduling timeline">
+        <div class="visual-glow"></div>
+        <div class="floating-label label-top"><span class="tiny-square square-cyan"></span> READY QUEUE <strong>04</strong></div>
+        <div class="pipeline-card">
+          <div class="pipeline-head"><span>PROCESS QUEUE</span><span class="live-tag">● SIMULATED</span></div>
+          <div class="process-chip"><span class="process-dot dot-purple"></span><b>P1</b><span class="chip-line"></span><small>BT 7</small></div>
+          <div class="process-chip"><span class="process-dot dot-cyan"></span><b>P2</b><span class="chip-line"></span><small>BT 4</small></div>
+          <div class="process-chip active-chip"><span class="process-dot dot-lime"></span><b>P3</b><span class="chip-line"></span><small>BT 1</small><span class="shortest-tag">SHORTEST</span></div>
+          <div class="process-chip"><span class="process-dot dot-orange"></span><b>P4</b><span class="chip-line"></span><small>BT 2</small></div>
+          <div class="cpu-arrow">↓</div>
+          <div class="cpu-block"><div class="cpu-icon">▦</div><div><b>CPU</b><small>Scheduler selects next process</small></div><span class="cpu-pulse"></span></div>
+          <div class="mini-gantt"><div class="mini-seg seg-purple">P1</div><div class="mini-seg seg-cyan">P2</div><div class="mini-seg seg-lime">P3</div><div class="mini-seg seg-orange">P4</div></div>
+          <div class="mini-times"><span>0</span><span>2</span><span>3</span><span>4</span><span>6</span></div>
+        </div>
+        <div class="floating-label label-bottom"><span class="legend-square"></span> Shortest remaining time wins</div>
+        <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+      </div>
+      <div class="hero-index"><span>01</span><span class="index-line"></span><span>CPU SCHEDULING LAB</span></div>
+    </section>
+
+    <section class="quick-facts section-wrap" aria-label="Project highlights">
+      <div class="fact"><span class="fact-icon">⌁</span><div><strong>2 algorithms</strong><small>SJF & SRTF</small></div></div>
+      <div class="fact"><span class="fact-icon">▤</span><div><strong>4 core metrics</strong><small>CT · TAT · WT · RT</small></div></div>
+      <div class="fact"><span class="fact-icon">▥</span><div><strong>Live Gantt chart</strong><small>Execution timeline</small></div></div>
+      <div class="fact"><span class="fact-icon">↔</span><div><strong>Side-by-side</strong><small>Compare same inputs</small></div></div>
+    </section>
+
+    <section class="section-wrap section-block" id="simulator">
+      <div class="section-heading">
+        <div><div class="eyebrow">INTERACTIVE WORKSPACE / 01</div><h2>The scheduling <span class="gradient-text">lab.</span></h2></div>
+        <p>Start with the sample workload or edit the process table. The simulator validates inputs and recalculates every chart and metric in your browser.</p>
+      </div>
+
+      <div class="lab-layout">
+        <section class="panel input-panel" aria-labelledby="inputHeading">
+          <div class="panel-heading"><div><span class="panel-kicker">STEP 01</span><h3 id="inputHeading">Define your workload</h3></div><span class="panel-icon">＋</span></div>
+          <p class="panel-description">Give each process an ID, arrival time and CPU burst time. Times must be non-negative integers; burst time must be greater than zero.</p>
+          <div class="process-table-wrap">
+            <table class="input-table">
+              <thead><tr><th scope="col">Process ID</th><th scope="col">Arrival</th><th scope="col">Burst</th><th scope="col"><span class="sr-only">Remove process</span></th></tr></thead>
+              <tbody id="processInputs"></tbody>
+            </table>
+          </div>
+          <div class="input-actions"><button class="text-button" type="button" id="addProcessBtn">＋ Add process</button><button class="text-button muted" type="button" id="resetSampleBtn">↺ Load sample</button></div>
+          <div class="input-note"><span class="note-icon">i</span><span><b>Rule:</b> Arrival Time can be 0. Burst Time cannot be 0. Duplicate process IDs are not allowed.</span></div>
+          <div class="validation-message" id="validationMessage" role="alert" hidden></div>
+        </section>
+
+        <section class="panel run-panel" aria-labelledby="runHeading">
+          <div class="panel-heading"><div><span class="panel-kicker">STEP 02</span><h3 id="runHeading">Choose the scheduler</h3></div><span class="panel-icon">▶</span></div>
+          <p class="panel-description">Run either algorithm independently or compare both against the same input set.</p>
+          <div class="algorithm-choice" role="group" aria-label="Choose scheduling algorithm">
+            <button type="button" class="algorithm-option" data-mode="np" aria-pressed="false"><span class="option-radio"></span><span><b>Non-Preemptive SJF</b><small>Once started, a process runs to completion.</small></span><span class="option-code">SJF</span></button>
+            <button type="button" class="algorithm-option" data-mode="srtf" aria-pressed="false"><span class="option-radio"></span><span><b>Preemptive SJF</b><small>Re-check the shortest remaining time.</small></span><span class="option-code">SRTF</span></button>
+            <button type="button" class="algorithm-option selected" data-mode="both" aria-pressed="true"><span class="option-radio"></span><span><b>Compare both</b><small>Generate both schedules and compare metrics.</small></span><span class="option-code">DUAL</span></button>
+          </div>
+          <button class="button button-primary run-button" type="button" id="runBtn"><span>▶</span> Run simulation</button>
+          <div class="engine-status" id="engineStatus" aria-live="polite"><span class="status-dot"></span><span>Ready to simulate · Default sample loaded</span></div>
+          <div class="rule-box"><div class="rule-box-icon">⚖</div><div><b>Scheduling tie-break</b><p>When burst/remaining times tie, the current process is kept in SRTF when possible; otherwise earlier arrival and then input order decide. This makes results reproducible.</p></div></div>
+        </section>
+      </div>
+
+      <div class="results-heading"><div><div class="eyebrow">STEP 03 / OUTPUT</div><h3>Simulation results</h3></div><button class="button button-outline" id="exportCsvBtn" type="button">↓ Export metrics CSV</button></div>
+      <div class="results-empty" id="resultsEmpty" hidden><span class="empty-symbol">⌁</span><b>Your results will appear here</b><p>Enter valid process data and select “Run simulation”.</p></div>
+      <div id="resultsContainer">
+        <div class="compare-summary" id="comparisonSummary"></div>
+        <div class="result-grid" id="resultGrid"></div>
+        <section class="comparison-panel panel" id="comparisonPanel">
+          <div class="panel-heading"><div><span class="panel-kicker">AT A GLANCE</span><h3>Performance comparison</h3></div><span class="panel-icon">↔</span></div>
+          <div class="metric-comparison" id="metricComparison"></div>
+          <p class="comparison-footnote">Lower waiting, turnaround and response times are usually desirable. These results describe the supplied workload; they are not universal guarantees about every workload.</p>
+        </section>
+      </div>
+    </section>
+
+    <section class="section-block concepts-section" id="concepts">
+      <div class="section-wrap">
+        <div class="section-heading">
+          <div><div class="eyebrow">THE CORE IDEA / 02</div><h2>Same family. <span class="gradient-text">Different decisions.</span></h2></div>
+          <p>SJF looks at the next job's burst time. SRTF repeatedly considers how much execution time each ready process still needs.</p>
+        </div>
+        <div class="concept-grid">
+          <article class="concept-card concept-np"><div class="concept-top"><span class="concept-number">A</span><span class="concept-tag">NON-PREEMPTIVE</span></div><div class="concept-illustration"><div class="queue-mini"><span>P1</span><span>P2</span><span class="queue-highlight">P3</span></div><div class="arrow-line">→</div><div class="cpu-mini">CPU<br><small>locked in</small></div></div><h3>Shortest Job First</h3><p>At a scheduling decision, choose the available process with the smallest original burst time. After it starts, it continues until completion.</p><div class="concept-rule"><span>KEY RULE</span><b>No forced interruption</b></div></article>
+          <article class="concept-card concept-srtf"><div class="concept-top"><span class="concept-number">B</span><span class="concept-tag">PREEMPTIVE</span></div><div class="concept-illustration"><div class="timeline-mini"><span class="t-purple">P1</span><span class="t-cyan">P2</span><span class="t-lime">P3</span><span class="t-purple">P1</span></div><div class="interrupt-mark">↯</div></div><h3>Shortest Remaining Time First</h3><p>At each decision point, choose the process with the smallest remaining CPU time. A newly arrived shorter process can interrupt the current one.</p><div class="concept-rule"><span>KEY RULE</span><b>Preemption is allowed</b></div></article>
+        </div>
+
+        <div class="formula-section">
+          <div class="formula-copy"><div class="eyebrow">MEASURE THE OUTCOME</div><h3>Four metrics explain the schedule.</h3><p>These formulas are calculated per process after the execution timeline is built. “First start” means the first time the process receives the CPU.</p></div>
+          <div class="formula-grid">
+            <div class="formula-card"><span class="formula-symbol">CT</span><b>Completion Time</b><p>Time when a process finishes execution.</p><div class="formula-code">CT = finishing time</div></div>
+            <div class="formula-card"><span class="formula-symbol">TAT</span><b>Turnaround Time</b><p>Total elapsed time between arrival and completion.</p><div class="formula-code">TAT = CT − AT</div></div>
+            <div class="formula-card"><span class="formula-symbol">WT</span><b>Waiting Time</b><p>Total time spent waiting for CPU service.</p><div class="formula-code">WT = TAT − BT</div></div>
+            <div class="formula-card"><span class="formula-symbol">RT</span><b>Response Time</b><p>Time until the process first gets the CPU.</p><div class="formula-code">RT = first start − AT</div></div>
+          </div>
+        </div>
+
+        <div class="pseudocode-panel panel">
+          <div class="panel-heading"><div><span class="panel-kicker">ALGORITHM LOGIC</span><h3>Pseudocode, simplified</h3></div><span class="panel-icon">{ }</span></div>
+          <div class="pseudo-columns">
+            <div><div class="pseudo-title"><span class="pseudo-dot dot-purple"></span>Non-Preemptive SJF</div><pre><code>while processes remain:
+  ready = arrived, unfinished processes
+  if ready is empty:
+    jump to next arrival time
+  else:
+    choose ready process with
+      shortest burst time
+    run it until completion
+    record completion time
+calculate CT, TAT, WT and RT</code></pre></div>
+            <div><div class="pseudo-title"><span class="pseudo-dot dot-cyan"></span>Preemptive SJF / SRTF</div><pre><code>while processes remain:
+  ready = arrived processes with
+          remaining time > 0
+  if ready is empty:
+    advance to next arrival
+  else:
+    choose smallest remaining time
+    execute for one time unit
+    if remaining time reaches zero:
+      record completion time
+repeat until all processes finish
+calculate CT, TAT, WT and RT</code></pre></div>
+          </div>
+          <p class="pseudo-note">Implementation note: SRTF is simulated in integer time units. Adjacent intervals belonging to the same process are merged for a cleaner Gantt chart.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-wrap section-block research-section" id="research">
+      <div class="section-heading">
+        <div><div class="eyebrow">RESEARCH CONNECTION / 03</div><h2>From paper to <span class="gradient-text">project.</span></h2></div>
+        <p>The simulator turns scheduling theory into a controlled experiment: use identical process inputs, run two algorithms, and compare measurable outcomes.</p>
+      </div>
+      <article class="research-card">
+        <div class="research-ribbon"><span>PRIMARY PAPER</span><span>OPEN ACCESS · 2024</span></div>
+        <div class="research-content">
+          <div class="research-main"><div class="journal-label">HELIYON · VOL. 10 · ISSUE 9 · ARTICLE e29959</div><h3>Study and Evaluation of CPU Scheduling Algorithms</h3><p class="authors">Miguel González-Rodríguez · Lorena Otero-Cerdeira · Encarnación González-Rufino · Francisco Javier Rodríguez-Martínez</p><p class="research-summary">The paper reviews CPU scheduling research, develops study material to help learners understand algorithms, and presents a software simulator for comparing scheduling algorithms in a controlled environment. Its educational and evaluation focus closely matches the method used in this project.</p><a class="paper-link" href="https://doi.org/10.1016/j.heliyon.2024.e29959" target="_blank" rel="noopener noreferrer">Read the research paper <span aria-hidden="true">↗</span></a></div>
+          <div class="research-facts"><div><span>PROBLEM</span><p>Helping students understand and compare scheduling approaches beyond theory alone.</p></div><div><span>APPROACH</span><p>Literature review, learning materials and simulator-based evaluation.</p></div><div><span>TAKEAWAY</span><p>Controlled simulation gives a consistent way to inspect algorithm behavior.</p></div></div>
+        </div>
+      </article>
+      <div class="research-bridge"><div class="bridge-column"><span class="bridge-label">RESEARCH METHOD</span><b>Implement → Simulate → Compare</b><p>The paper uses software simulation to compare scheduling approaches in a controlled environment.</p></div><div class="bridge-arrow">⟶</div><div class="bridge-column bridge-highlight"><span class="bridge-label">OUR IMPLEMENTATION</span><b>SJF vs SRTF in the browser</b><p>Our focused adaptation uses the same inputs, generates each schedule and compares CT, TAT, WT and RT.</p></div></div>
+      <div class="research-caveat"><span class="note-icon">i</span><p><b>Scope note:</b> The selected paper studies CPU scheduling broadly; it is not a paper exclusively proposing this website or a new SJF/SRTF algorithm. This project adopts its simulation-and-comparison approach and applies it to the two algorithms in our syllabus.</p></div>
+      <article class="secondary-paper"><div class="secondary-tag">ADDITIONAL REFERENCE</div><div><h3>Optimizing Task Scheduling in Cloud Computing: An Enhanced Shortest Job First Algorithm</h3><p>Published in <i>Procedia Computer Science</i>, Volume 233, 2024, pages 604–613. This paper investigates a modified SJF approach in a cloud-computing simulation context; that environment is different from this project's single-CPU OS process model.</p><a href="https://doi.org/10.1016/j.procs.2024.03.250" target="_blank" rel="noopener noreferrer">Open paper ↗</a></div></article>
+    </section>
+
+    <section class="methodology-section" id="methodology">
+      <div class="section-wrap section-block">
+        <div class="section-heading">
+          <div><div class="eyebrow">SYSTEM DESIGN / 04</div><h2>The system <span class="gradient-text">pipeline.</span></h2></div>
+          <p>Each layer has one responsibility: collect inputs, schedule processes, calculate metrics, then present results.</p>
+        </div>
+        <div class="architecture-flow" aria-label="System architecture flow diagram">
+          <div class="architecture-node"><span class="architecture-index">01</span><span class="architecture-icon">⌨</span><b>User input</b><small>Process ID, arrival time, burst time</small></div><span class="flow-arrow">↓</span>
+          <div class="architecture-node"><span class="architecture-index">02</span><span class="architecture-icon">⑂</span><b>Algorithm selector</b><small>Non-Preemptive SJF / SRTF / Both</small></div><span class="flow-arrow">↓</span>
+          <div class="architecture-node architecture-core"><span class="architecture-index">03</span><span class="architecture-icon">▦</span><b>Scheduling engine</b><small>Ready queue, selection, preemption, execution timeline</small></div><span class="flow-arrow">↓</span>
+          <div class="architecture-split"><div class="architecture-node"><span class="architecture-index">04A</span><span class="architecture-icon">∑</span><b>Metric calculator</b><small>CT, TAT, WT, RT and averages</small></div><div class="architecture-node"><span class="architecture-index">04B</span><span class="architecture-icon">▥</span><b>Gantt renderer</b><small>Timeline, intervals and process blocks</small></div></div><span class="flow-arrow">↓</span>
+          <div class="architecture-node architecture-output"><span class="architecture-index">05</span><span class="architecture-icon">↔</span><b>Results & comparison</b><small>Tables, average metrics and exportable CSV</small></div>
+        </div>
+        <div class="tech-stack"><div><span class="tech-badge html-badge">HTML</span><b>Structure</b><p>Forms, tables, navigation, content sections.</p></div><div><span class="tech-badge css-badge">CSS</span><b>Presentation</b><p>Responsive layout, process blocks and visual hierarchy.</p></div><div><span class="tech-badge js-badge">JS</span><b>Logic</b><p>Scheduling algorithms, calculations and dynamic rendering.</p></div><div><span class="tech-badge browser-badge">WEB</span><b>Runtime</b><p>Works in a modern browser; no server or database required.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section-wrap section-block limitations-section" id="scope">
+      <div class="section-heading"><div><div class="eyebrow">ENGINEERING NOTES / 05</div><h2>Scope & <span class="gradient-text">assumptions.</span></h2></div><p>A transparent simulator is easier to evaluate: these boundaries clarify exactly what is—and is not—being modelled.</p></div>
+      <div class="scope-grid"><article><span class="scope-icon">✓</span><h3>Included</h3><ul><li>Single CPU scheduling model</li><li>Integer arrival and burst times</li><li>Preemption when a strictly shorter remaining-time job wins</li><li>Idle intervals when no process is ready</li><li>CT, TAT, WT, RT and average metrics</li></ul></article><article><span class="scope-icon scope-icon-warn">!</span><h3>Not modelled yet</h3><ul><li>Real operating-system process control</li><li>Actual CPU burst prediction</li><li>Context-switch duration and its cost</li><li>Multicore scheduling and I/O bursts</li><li>Priority, deadline or fairness policies</li></ul></article><article><span class="scope-icon">↗</span><h3>Future extensions</h3><ul><li>FCFS, Round Robin and Priority Scheduling</li><li>Configurable context-switch overhead</li><li>Starvation and fairness indicators</li><li>Animated step-by-step execution</li><li>Adaptive scheduling research variants</li></ul></article></div>
+    </section>
+
+    <section class="references-section" id="references">
+      <div class="section-wrap section-block">
+        <div class="section-heading"><div><div class="eyebrow">SOURCE NOTES / 06</div><h2>References & <span class="gradient-text">further reading.</span></h2></div><p>Use the primary research paper to explain the research connection during your SLA review. The extra paper is a separate cloud-scheduling reference.</p></div>
+        <ol class="reference-list">
+          <li><div><b>González-Rodríguez, M., Otero-Cerdeira, L., González-Rufino, E., & Rodríguez-Martínez, F. J. (2024).</b><i> Study and Evaluation of CPU Scheduling Algorithms.</i> <span>Heliyon, 10(9), e29959.</span><small>DOI: 10.1016/j.heliyon.2024.e29959</small><a href="https://doi.org/10.1016/j.heliyon.2024.e29959" target="_blank" rel="noopener noreferrer">doi.org/10.1016/j.heliyon.2024.e29959 ↗</a></div><span class="ref-number">01</span></li>
+          <li><div><b>Pachipala, Y., Sureddy, K. S., Kaitepalli, A. B. S. S., Pagadala, N., Nalabothu, S. S., & Iniganti, M. (2024).</b><i> Optimizing Task Scheduling in Cloud Computing: An Enhanced Shortest Job First Algorithm.</i> <span>Procedia Computer Science, 233, 604–613.</span><small>DOI: 10.1016/j.procs.2024.03.250</small><a href="https://doi.org/10.1016/j.procs.2024.03.250" target="_blank" rel="noopener noreferrer">doi.org/10.1016/j.procs.2024.03.250 ↗</a></div><span class="ref-number">02</span></li>
+          <li><div><b>Silberschatz, A., Galvin, P. B., & Gagne, G.</b><i> Operating System Concepts.</i><span> Wiley. Consult the edition prescribed by your course.</span></div><span class="ref-number">03</span></li>
+          <li><div><b>Tanenbaum, A. S., & Bos, H.</b><i> Modern Operating Systems.</i><span> Pearson. Consult the edition prescribed by your course.</span></div><span class="ref-number">04</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="closing-cta section-wrap"><div><div class="eyebrow">READY TO EXPERIMENT?</div><h2>Change the workload.<br><span class="gradient-text">Watch the schedule change.</span></h2></div><a class="button button-primary" href="#simulator">Back to simulator ↑</a></section>
+  </main>
+
+  <footer class="site-footer"><a class="brand footer-brand" href="#home"><span class="brand-mark"><span></span><span></span><span></span></span><span>SCHEDU<span class="brand-accent">LAB</span></span></a><p>Operating System SLA · Preemptive & Non-Preemptive SJF</p><span>Built for learning, simulation and comparison.</span></footer>
+  <script src="script.js"></script>
+</body>
+</html>
